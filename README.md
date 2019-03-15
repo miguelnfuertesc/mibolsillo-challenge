@@ -4,4 +4,4 @@
 Open index.html
 
 ## Description
-Dijkstra's algorithm
+Dijkstra's algorithm explained with comments in code.js
