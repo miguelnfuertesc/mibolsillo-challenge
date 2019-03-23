@@ -1,4 +1,134 @@
 /* Logic */
+const getKeyByValue = (object, value) => {
+    return Object.keys(object).find(key => object[key] === value);
+}
+
+const generateEdges = (input, ...args) => {
+    //Sort edges, routes goes from left to right as alphabetical order
+    let edges = input.toUpperCase().replace(/\s/g,'').split(',').sort();
+    let currentEdges = [];
+    let finalEdges = [];
+
+    //If ...args are not passed, return sorted edges
+    if (args.length===0) {
+      return edges;
+    }
+
+    //Get edges that include the given route, not sorted by given route
+    for (let edge of edges) {
+      args.reduce((prior, current) => {
+        if(prior!==null) {
+          if ( edge.includes(prior.concat(current)) ) {
+            currentEdges.push(edge);
+          }
+        }
+        return current;
+      }, null);
+    }
+
+    //Sort edges by given route not alphabetical order, the previous one will be linked to the next one
+    for (let arg of args) {
+      for (let currentEdge of currentEdges) {
+        if (currentEdge.charAt(0)===arg) {
+            finalEdges.push(currentEdge);
+        }
+      }
+    }
+
+    //If finalEdges don't include any of the args that route doesn't exist
+    for (let arg of args) {
+      if (! finalEdges.join().includes(arg) ) {
+        finalEdges = [];
+      }
+    }
+
+    return finalEdges;
+}
+
+const generateGraph = (sortedEdges, actionType, ...args) => {
+  let edges = [...sortedEdges];
+  let type = actionType;
+  let start = args[0];
+  let finish = args[1];
+  let routes = [];  //2D array
+
+  edges.map(element => {
+    let children = element.split("");
+    routes.push(children);
+  });
+
+  //If sortedEdges is empty then that route doesn't exist
+  if (edges.length===0) {
+    return {};
+  }
+
+  let graph = {};
+  routes.reduce((prior, current, index) => {
+    //Build first node
+    if (prior===null) {
+        graph[ current[0] ] = { [ current[1] ]: Number(current[2]) };
+    }
+
+    //Build the other nodes
+    if (prior!==null) {
+      //If first node has more routes
+      if (prior[0]==current[0]) {
+        graph[ current[0] ] = { ...graph[ current[0] ], [ prior[1] ]: Number(prior[2]), [ current[1] ]: Number(current[2]) };
+      } 
+
+      //If the other nodes have more routes
+      if (prior[0]!=current[0]) {
+        graph[ current[0] ] = { ...graph[ current[0] ], [ current[1] ]: Number(current[2]) };
+      }
+
+      //Build the previous node before the last one
+      if (type==='SHORT_ROUTE' && routes[routes.length-1]===current ) {
+        if ( graph[ current[1] ] ) {
+          graph[ current[0] ] = { ...graph[ current[0] ], [ `_${current[1]}` ]: Number(current[2]) };
+          delete graph[ current[0] ][ current[1] ];
+        }
+      }
+      
+    }
+
+    return current;
+  }, null);
+
+  //Build last node
+  if (! graph[ routes[routes.length-1][1] ] ) {
+    graph[ routes[routes.length-1][1] ] = { };
+  } else {
+    graph[ `_${routes[routes.length-1][1]}` ] = { };  
+  }
+
+  //Build last node for SHORT_ROUTE
+  if (type==='SHORT_ROUTE') {
+    if (start===finish) {
+      finish = `_${finish}`;
+    }
+
+    //When tap true means still in the given route
+    let tap = false;
+    let keys = Object.keys(graph);
+    for (let key of keys) {
+      if (key===start) {
+        tap = true;
+      }
+      if (tap===false) {
+        delete graph[ key ];
+      }
+      if (key===finish) {
+        tap = false;
+      }
+    }
+
+    let currentKeys = Object.keys(graph);
+    graph[ currentKeys[ currentKeys.length-1 ] ] = {}
+  }
+
+  return graph;
+}
+
 const findLowestCostNode = (costs, processed) => {
     const knownNodes = Object.keys(costs)
 
@@ -19,8 +149,14 @@ const findLowestCostNode = (costs, processed) => {
 const dijkstra = (graph) => {
     //Where to start and finish
     const keys = Object.keys(graph);
+    const values = Object.values(graph);
     const start = keys[0];
-    const finish = keys[keys.length-1];
+    let finish;
+    for (let value of values) {
+        if (Object.keys(value).length === 0 && value.constructor === Object) {
+            finish = getKeyByValue(graph, value);
+        }
+    }
     
     //Initial trackedCosts
     const trackedCosts = Object.assign({ [finish]: Infinity }, graph[start]);
@@ -64,7 +200,7 @@ const dijkstra = (graph) => {
     }
     optimalPath.reverse();
 
-    //If finish from trackedCosts is Infinity then that route doesn't exists
+    //If finish from trackedCosts is Infinity then that route doesn't exist
     const results = {
         distance: (trackedCosts[finish]===Infinity) ? `No such route` : trackedCosts[finish],
         path: optimalPath
@@ -75,15 +211,7 @@ const dijkstra = (graph) => {
 
 
 /* UI */
-let inputAB = window.document.getElementById('inputAB');
-let inputAD = window.document.getElementById('inputAD');
-let inputAE = window.document.getElementById('inputAE');
-let inputBC = window.document.getElementById('inputBC');
-let inputCD = window.document.getElementById('inputCD');
-let inputCE = window.document.getElementById('inputCE');
-let inputDC = window.document.getElementById('inputDC');
-let inputDE = window.document.getElementById('inputDE');
-let inputEB = window.document.getElementById('inputEB');
+let input = window.document.getElementById('input');
 let output01 = window.document.getElementById('output01');
 let output02 = window.document.getElementById('output02');
 let output03 = window.document.getElementById('output03');
@@ -107,70 +235,73 @@ window.addEventListener('keyup', (event) => {
 btnCalculate.addEventListener('click', (event) => {
     event.preventDefault();
 
-    let AB = parseInt(inputAB.value);
-    let AD = parseInt(inputAD.value);
-    let AE = parseInt(inputAE.value);
-    let BC = parseInt(inputBC.value);
-    let CD = parseInt(inputCD.value);
-    let CE = parseInt(inputCE.value);
-    let DC = parseInt(inputDC.value);
-    let DE = parseInt(inputDE.value);
-    let EB = parseInt(inputEB.value);
+    //Test input AB5, BC4, CD8, DC8, DE6, AD5, CE2, EB3, AE7
+    let mainEdges = generateEdges(input.value);
+    let mainGraph = generateGraph(mainEdges);
+    console.log('mnfc mainGraph ', mainGraph);
 
-    const graph01 = {
-        A: {B: AB},
-        B: {C: BC},
-        C: { }
-    };
+    //Output #01 - Distance of route A-B-C
+    let edges01 = generateEdges(input.value, 'A', 'B', 'C');
+    let graph01 = generateGraph(edges01, 'SINGLE_ROUTE');
+    console.log('mnfc graph01 ', graph01);
     output01.value = dijkstra(graph01);
+    output01.style.color = '#336df4';
+    output01.style.fontWeight = 'bold';
 
-    const graph02 = {
-        A: {D: AD},
-        D: { }
-    };
+    //Output #02 - Distance of route A-D
+    let edges02 = generateEdges(input.value, 'A', 'D');
+    let graph02 = generateGraph(edges02, 'SINGLE_ROUTE');
+    console.log('mnfc graph02 ', graph02);
     output02.value = dijkstra(graph02);
+    output02.style.color = '#336df4';
+    output02.style.fontWeight = 'bold';
 
-    const graph03 = {
-        A: {D: AD},
-        D: {C: DC},
-        C: { }
-    };
+    //Output #03 - Distance of route A-D-C
+    let edges03 = generateEdges(input.value, 'A', 'D', 'C');
+    let graph03 = generateGraph(edges03, 'SINGLE_ROUTE');
+    console.log('mnfc graph03 ', graph03);
     output03.value = dijkstra(graph03);
+    output03.style.color = '#336df4';
+    output03.style.fontWeight = 'bold';
 
-    const graph04 = {
-        A: {E: AE},
-        E: {B: EB},
-        B: {C: BC},
-        C: {D: CD},
-        D: { }
-    };
+    //Output #04 - Distance of route A-E-B-C-D
+    let edges04 = generateEdges(input.value, 'A', 'E', 'B', 'C', 'D');
+    let graph04 = generateGraph(edges04, 'SINGLE_ROUTE');
+    console.log('mnfc graph04 ', graph04);
     output04.value = dijkstra(graph04);
+    output04.style.color = '#336df4';
+    output04.style.fontWeight = 'bold';
 
-    const graph05 = {
-        A: {E: AE},
-        E: { },
-        D: { }
-    }
+    //Output #05 - Distance of route A-E-D
+    let edges05 = generateEdges(input.value, 'A', 'E', 'D');
+    let graph05 = generateGraph(edges05, 'SINGLE_ROUTE');
+    console.log('mnfc graph05 ', graph05);
     output05.value = dijkstra(graph05);
+    output05.style.color = '#336df4';
+    output05.style.fontWeight = 'bold';
 
+    //Output #06 - Trips from C to C with 3 stops
     output06.value = '';    //Not working
+
+    //Output #07 - Trips from A to C with 4 stops
     output07.value = '';    //Not working
 
-    const graph08 = {
-        A: {B: AB, D: AD, E: AE},
-        B: {C: BC},
-        C: { }
-    };
+    //Output #08 - Shortest route from A to C
+    let edges08 = generateEdges(input.value);
+    let graph08 = generateGraph(edges08, 'SHORT_ROUTE', 'A', 'C');
+    console.log('mnfc graph08 ', graph08);
     output08.value = dijkstra(graph08);
+    output08.style.color = '#336df4';
+    output08.style.fontWeight = 'bold';
 
-    const graph09 = {
-        B: {C: BC},
-        C: {D: CD, E: CE},
-        D: {C: DC, E: DE},
-        E: {_B: EB},
-        _B: { }
-    };
+    //Output #09 - Shortest route from B to B
+    let edges09 = generateEdges(input.value);
+    let graph09 = generateGraph(edges09, 'SHORT_ROUTE', 'B', 'B');
+    console.log('mnfc graph09 ', graph09);
     output09.value = dijkstra(graph09);
+    output09.style.color = '#336df4';
+    output09.style.fontWeight = 'bold';
 
+    //Output #10 - Routes C to C distance<30
     output10.value = '';    //Not working
 });

@@ -15,89 +15,14 @@
 
 		<div class="row">
 			<div id="leftColumn" class="col-12 col-lg-6">
-
+				<!-- Input component -->
 				<div class="p-2">
 					<h4>Input</h4>	
 					<div id="inputsContainer" class="row mb-2">
-
-						<div class="col-4">
-							<!-- Input AB -->
-							<div class="input-group mb-2">
-								<div class="input-group-prepend">
-									<span style="background-color: rgb(204, 42, 48); color: white; width: 50px;" class="input-group-text" id="basic-addon1">AB</span>
-								</div>
-								<input id="inputAB" type="text" class="form-control" placeholder="Number">
-							</div>
-
-							<!-- Input AD -->
-							<div class="input-group mb-2">
-								<div class="input-group-prepend">
-									<span style="background-color: rgb(95, 231, 239); color: white; width: 50px;" class="input-group-text" id="basic-addon1">AD</span>
-								</div>
-								<input id="inputAD" type="text" class="form-control" placeholder="Number">
-							</div>
-
-							<!-- Input AE -->
-							<div class="input-group mb-2">
-								<div class="input-group-prepend">
-									<span style="background-color: rgb(140, 100, 8); color: white; width: 50px;" class="input-group-text" id="basic-addon1">AE</span>
-								</div>
-								<input id="inputAE" type="text" class="form-control" placeholder="Number">
-							</div>
+						<div class="col-12">
+							<!-- Input -->
+							<textarea id="input" type="text" class="form-control" rows="3" placeholder="eg. AB5, BC4, CD8, DC8, DE6, AD5, CE2, EB3, AE7"></textarea>
 						</div>
-
-						<div class="col-4">
-							<!-- Input BC -->
-							<div class="input-group mb-2">
-								<div class="input-group-prepend">
-									<span style="background-color: rgb(83, 175, 17); color: white; width: 50px;" class="input-group-text" id="basic-addon1">BC</span>
-								</div>
-								<input id="inputBC" type="text" class="form-control" placeholder="Number">
-							</div>
-
-							<!-- Input CD -->
-							<div class="input-group mb-2">
-								<div class="input-group-prepend">
-									<span style="background-color: rgb(255, 211, 81); color: white; width: 50px;" class="input-group-text" id="basic-addon1">CD</span>
-								</div>
-								<input id="inputCD" type="text" class="form-control" placeholder="Number">
-							</div>
-
-							<!-- Input CE -->
-							<div class="input-group mb-2">
-								<div class="input-group-prepend">
-									<span style="background-color: rgb(247, 160, 183); color: white; width: 50px;" class="input-group-text" id="basic-addon1">CE</span>
-								</div>
-								<input id="inputCE" type="text" class="form-control" placeholder="Number">
-							</div>
-						</div>
-
-						<div class="col-4">
-							<!-- Input DC -->
-							<div class="input-group mb-2">
-								<div class="input-group-prepend">
-									<span style="background-color: rgb(51, 109, 244); color: white; width: 50px;" class="input-group-text" id="basic-addon1">DC</span>
-								</div>
-								<input id="inputDC" type="text" class="form-control" placeholder="Number">
-							</div>
-	
-							<!-- Input DE -->
-							<div class="input-group mb-2">
-								<div class="input-group-prepend">
-									<span style="background-color: rgb(191, 95, 239); color: white; width: 50px;" class="input-group-text" id="basic-addon1">DE</span>
-								</div>
-								<input id="inputDE" type="text" class="form-control" placeholder="Number">
-							</div>
-	
-							<!-- Input EB -->
-							<div class="input-group mb-2">
-								<div class="input-group-prepend">
-									<span style="background-color: rgb(247, 149, 22); color: white; width: 50px;" class="input-group-text" id="basic-addon1">EB</span>
-								</div>
-								<input id="inputEB" type="text" class="form-control" placeholder="Number">
-							</div>
-						</div>
-
 					</div>	
 				</div>
 				
@@ -108,12 +33,14 @@
 
 				<div class="p-3"></div>
 
+				<!-- Output component -->
 				<div class="p-2">
 					<h4>Output</h4>		
 					<div id="outputsContainer" class="row mb-2">
 
 						<div class="col-6">
 							<!-- Output 01 -->
+							<span>Distance of route A-B-C</span>
 							<div class="input-group mb-3">
 									<div class="input-group-prepend">
 										<span class="input-group-text" id="basic-addon3">Output #01</span>
@@ -122,6 +49,7 @@
 							</div>
 
 							<!-- Output 02 -->
+							<span>Distance of route A-D</span>
 							<div class="input-group mb-3">
 									<div class="input-group-prepend">
 										<span class="input-group-text" id="basic-addon3">Output #02</span>
@@ -130,6 +58,7 @@
 							</div>
 
 							<!-- Output 03 -->
+							<span>Distance of route A-D-C</span>
 							<div class="input-group mb-3">
 									<div class="input-group-prepend">
 										<span class="input-group-text" id="basic-addon3">Output #03</span>
@@ -138,6 +67,7 @@
 							</div>
 
 							<!-- Output 04 -->
+							<span>Distance of route A-E-B-C-D</span>
 							<div class="input-group mb-3">
 									<div class="input-group-prepend">
 										<span class="input-group-text" id="basic-addon3">Output #04</span>
@@ -146,6 +76,7 @@
 							</div>
 
 							<!-- Output 05 -->
+							<span>Distance of route A-E-D</span>
 							<div class="input-group mb-3">
 									<div class="input-group-prepend">
 										<span class="input-group-text" id="basic-addon3">Output #05</span>
@@ -156,6 +87,7 @@
 
 						<div class="col-6">
 							<!-- Output 06 -->
+							<span>Trips from C to C with 3 stops</span>
 							<div class="input-group mb-3">
 									<div class="input-group-prepend">
 										<span class="input-group-text" id="basic-addon3">Output #06</span>
@@ -164,6 +96,7 @@
 							</div>
 
 							<!-- Output 07 -->
+							<span>Trips from A to C with 4 stops</span>
 							<div class="input-group mb-3">
 									<div class="input-group-prepend">
 										<span class="input-group-text" id="basic-addon3">Output #07</span>
@@ -172,6 +105,7 @@
 							</div>
 
 							<!-- Output 08 -->
+							<span>Shortest route from A to C</span>
 							<div class="input-group mb-3">
 									<div class="input-group-prepend">
 										<span class="input-group-text" id="basic-addon3">Output #08</span>
@@ -180,6 +114,7 @@
 							</div>
 
 							<!-- Output 09 -->
+							<span>Shortest route from B to B</span>
 							<div class="input-group mb-3">
 									<div class="input-group-prepend">
 										<span class="input-group-text" id="basic-addon3">Output #09</span>
@@ -188,6 +123,7 @@
 							</div>
 
 							<!-- Output 10 -->
+							<span>Routes C to C distance&lt;30</span>
 							<div class="input-group mb-3">
 									<div class="input-group-prepend">
 										<span class="input-group-text" id="basic-addon3">Output #10</span>
@@ -199,13 +135,13 @@
 					</div>					
 				</div>
 
+				<div class="p-3"></div>
 			</div>
 
 			<div id="rightColumn" class="col-12 col-lg-6 d-flex justify-content-center align-items-center">
 				<img class="img-fluid" src="./graph.jpeg"/>
-			</div>			
+			</div>
 		</div>
-
 	</section>
 	
 	<div class="p-2"></div>
